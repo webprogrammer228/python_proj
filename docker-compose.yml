@@ -1,8 +1,11 @@
 version: "3"
 services:
   webapi:
+    build:
+      context: app
+      dockerfile: Dockerfile
     container_name: flask
-    image: webapi
+    image: digitalocean.com/flask-python:3.6
     restart: unless-stopped
     environment:
       APP_ENV: "prod"
@@ -21,6 +24,10 @@ services:
       - backend
     ports:
       - 5000:5000
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
   mongodb:
     image: mongo:4.0.8
     container_name: mongodb
@@ -36,19 +43,27 @@ services:
       - mongodbdata:/data/db
     networks:
       - backend
-  tests:
-    image: mrexpen/planet_olymp_phase1
-    pull_policy: always
-    container_name: tests
-    ports:
-      - "8090:8080"
-    depends_on:
-      - webapi
-    environment:
-      SERVER_URL: "http://webapi:5000"
-      STAGE: all
-    networks:
-      - frontend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+  #tests:
+  #  image: mrexpen/planet_olymp_phase1
+  #  pull_policy: always
+  #  container_name: tests
+  #  ports:
+  #    - "8090:8080"
+  #  depends_on:
+  #    - webapi
+  #  environment:
+  #    SERVER_URL: "http://webapi:5000"
+  #    STAGE: all
+  #  networks:
+  #    - frontend
+  #  logging:
+  #    driver: "json-file"
+  #    options:
+  #      max-size: "5m"
 networks:
   frontend:
     driver: bridge

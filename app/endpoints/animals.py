@@ -49,7 +49,7 @@ def get_animal_info(animalId):
         }), 200
     else:
         return jsonify({'message': 'Animal not found'}), 404
-      
+
 @animals.route('/animals/search', methods=['GET'])
 def find_animal_info():
     auth_header = request.headers.get('Authorization')
@@ -136,6 +136,8 @@ def find_animal_info():
     else:
         animals = db.animals.find(query)
 
+
+
     animals = animals.skip(from_index).limit(size)
     visited_locations = request.args.get('visitedLocations', [])
     if visited_locations:
@@ -146,7 +148,6 @@ def find_animal_info():
     for animal in animals:
       animal_dict = {
           "id": animal.get('id'),
-          "animalTypes": animal.get('animalTypes'),
           "weight": animal.get('weight'),
           "length": animal.get('length'),
           "height": animal.get('height'),
@@ -158,7 +159,7 @@ def find_animal_info():
           "visitedLocations": visited_location_ids,
           "deathDateTime": animal.get('deathDateTime') if animal.get('deathDateTime') else None
       }
-                   
+                       
       if 'visitedLocations' not in animal_dict:
           animal_dict['visitedLocations'] = []
           
@@ -217,7 +218,7 @@ def create_animal():
 
     chipperId = data.get('chipperId')
 
-    if chipperId is None or chipperId < 0:
+    if chipperId is None or chipperId <= 0:
         return abort(400, 'chipper not found')
     if not chipperId or not isinstance(chipperId, int):
         return abort(400, 'Chipper ID is required and should be an integer')
@@ -293,7 +294,7 @@ def update_animal(animalId):
     chipperId_param = request.json.get('chipperId')
     chipper = db.accounts.find_one({'id': chipperId_param})
     if chipper is None:
-      return jsonify({"error": "Invalid chipper"}), 400
+      return jsonify({"error": "Invalid chipper"}), 404
     if not chipper:
         return jsonify({"error": "Invalid chipperId"}), 400
 

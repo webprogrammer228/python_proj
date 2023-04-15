@@ -40,16 +40,6 @@ def register_account():
         else:
             return jsonify({'message': 'User is already authenticated'}), 403
 
-    data = request.json
-
-    if not data:
-      return jsonify({'message': 'Request data is missing'}), 400
-
-    firstName = data.get('firstName', '').strip()
-    lastName = data.get('lastName', '').strip()
-    email = data.get('email', '').strip()
-    password = data.get('password', '').strip()
-
     if not firstName or not lastName or not email or not password:
         return jsonify({'message': 'Invalid data'}), 400
 
@@ -67,12 +57,12 @@ def register_account():
         'email': email,
         'password': password  
     }
-    db.accounts.insert_one(account)
-
     result = {
         'id': new_id,
         'firstName': firstName,
         'lastName': lastName,
         'email': email
     }
+    
+    db.accounts.insert_one(account)
     return jsonify(result), 201

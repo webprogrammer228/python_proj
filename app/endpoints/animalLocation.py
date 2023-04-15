@@ -65,9 +65,10 @@ def add_new_animal_location(animalId, pointId):
     auth_header = request.headers.get('Authorization')
     if auth_header is None:
         abort(401, 'Authorization header is missing')
+
     if not animalId or animalId <= 0 or not pointId or pointId <= 0:
         abort(400)
-    
+
     if auth_header.startswith('Basic '):
         encoded_credentials = auth_header.split(' ')[1]
         credentials = base64.b64decode(encoded_credentials).decode('utf-8')
@@ -77,45 +78,32 @@ def add_new_animal_location(animalId, pointId):
         if user is None:
             abort(401, 'Invalid email or password')
 
-    if animalId <= 0 or animalId is None:
-      return jsonify({"message:": "Invalid animalId"}), 400  
-    if pointId <= 0 or pointId is None:
-      return jsonify({"message:": "Invalid pointId"}), 400
-
     animal = db.animals.find_one({'id': animalId})
-    if not animal:
+    if animal is None:
         abort(404, f"Животное с animalId {animalId} не найдено")
 
     if animal.get('lifeStatus', '') == "DEAD":
         abort(400)
 
     location = db.locations.find_one({"id": pointId})
-    chip_locationId = animal.get('chippingLocationId')
-    
-    if chip_locationId is not None and chip_locationId == pointId:
-      abort(400, f"Животное уже посетило точку чипирования с id {pointId}")
     if location is None:
-      abort(404, f"Несуществующая точка локации")
+        abort(404, f"Точка локации с pointId {pointId} не найдена")
 
-    visited_locations = db.animals.find_one({'visitedLocations': pointId})
-    loc = []
-    if visited_locations:
-      for location in visited_locations:
-        if location == pointId:
-          return jsonify({"error": "This point is exist!"}), 400
-        else:
-          loc.append(location)
-    
+    visited_location_ids = animal.get('visitedLocations', [])
+    if pointId in visited_location_ids:
+        abort(400, f"Животное уже посетило точку локации с id {pointId}")
+
     timezone = pytz.timezone('UTC')
     visited_locations_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(timezone)
     updated_date = visited_locations_time.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+    new_location_id = db.animals.count_documents({'visitedLocations': {'$exists': True}}) + 1
     new_location = {
-        "id": db.animals.count_documents({}) + 1,
+        "id": new_location_id,
         "locationPointId": pointId,
         "dateTimeOfVisitLocationPoint": updated_date
     }
-    db.animals.update_one({'id': animalId}, {'$set': {'visitedLocations': loc}})
-       
+    db.animals.update_one({'id': animalId}, {'$push': {'visitedLocations': pointId }})
+      
     return jsonify(new_location), 201
 
 @animal_location.route('/animals/<animalId>/locations', methods=['PUT'])
