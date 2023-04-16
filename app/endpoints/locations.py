@@ -3,6 +3,22 @@ from database import db
 import base64
 
 locations = Blueprint('locations', __name__)
+
+@locations.route('/locations', methods=['GET'])
+def get_all_locations():
+    auth_header = request.headers.get('Authorization')
+    if auth_header is not None and auth_header.startswith('Basic '):
+        encoded_credentials = auth_header.split(' ')[1]
+        credentials = base64.b64decode(encoded_credentials).decode('utf-8')
+        email, password = credentials.split(':')
+
+        user = db.accounts.find_one({'email': email, 'password': password})
+        if user is None:
+            abort(401, 'Invalid email or password')
+
+    location = db.locations.find({}, {'_id': False})
+
+    return jsonify(list(location)), 200
     
 @locations.route('/locations/<pointId>', methods=['GET'])
 def get_location(pointId):
@@ -62,13 +78,14 @@ def create_location():
         'latitude': latitude,
         'longitude': longitude
     }
-    db.locations.insert_one(location)
+
     
     result = {
         'id': new_id,
         'latitude': latitude,
         'longitude': longitude
     }
+    db.locations.insert_one(location)
     return jsonify(result), 201
 
 @locations.route('/locations/<pointId>', methods=['PUT'])

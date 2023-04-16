@@ -1,0 +1,23 @@
+.main {
+  width: 100%;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.topBlock {
+  display: flex;
+  justify-content: right;
+  width: 100%;
+}
+
+.noLocations {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.errorMessage {
+  color: red;
+}

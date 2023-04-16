@@ -5,6 +5,22 @@ import random
 
 animal_type = Blueprint('animal_type', __name__)
 
+@animal_type.route('/animals/types', methods=['GET'])
+def getanimaltypes():
+    authheader = request.headers.get('Authorization')
+    if authheader is not None and authheader.startswith('Basic '):
+        encodedcredentials = authheader.split(' ')[1]
+        credentials = base64.b64decode(encodedcredentials).decode('utf-8')
+        email, password = credentials.split(':')
+
+        user = db.accounts.find_one({'email': email, 'password': password})
+        if user is None:
+            abort(401, 'Invalid email or password')
+
+    animaltypes = db.animals_types.find({}, {'_id': False})
+
+    return jsonify(list(animaltypes)), 200
+
 @animal_type.route('/animals/types/<typeId>', methods=['GET'])
 def get_animal_type(typeId):
     typeId = int(typeId)  

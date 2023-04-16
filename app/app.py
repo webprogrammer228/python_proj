@@ -7,8 +7,10 @@ from endpoints.registration import registration
 from endpoints.animalLocation import animal_location
 from endpoints.animalType import animal_type
 from database import db
+from flask_cors import CORS
 
 application = Flask(__name__)
+CORS(application)
 #точка входа в приложение
 
 application.register_blueprint(accounts)
