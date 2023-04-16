@@ -7,7 +7,6 @@ import Account from "./pages/account";
 import Locations from "./pages/locations";
 import AnimalTypes from "./pages/animalTypes";
 import Animal from "./pages/animal";
-import VisitedLocations from "./pages/visitedLocations";
 
 function App() {
   return (
@@ -20,7 +19,6 @@ function App() {
             <Route element={<Locations />} path="/locations" />
             <Route element={<AnimalTypes />} path="/animal-types" />
             <Route element={<Animal />} path="/animal" />
-            <Route element={<VisitedLocations />} path="/visited-locations" />
           </Route>
           <Route path="/" element={<Login />} />
           <Route path="/registration" element={<Registration />} />

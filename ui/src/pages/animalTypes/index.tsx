@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import { observer } from "mobx-react";
 import { addAnimalType, getAnimalTypes } from "../../models/animalTypeRequest";
-import animalTypeStore from "../../store/animalTypes";
+import animalTypeStore from "../../store/animalTypesStore";
 import {
   Box,
   Button,

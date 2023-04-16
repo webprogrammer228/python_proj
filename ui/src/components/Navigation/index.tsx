@@ -1,10 +1,14 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
-
+import Cookies from "js-cookie";
 import styles from "./main.module.scss";
 
 function Navigation() {
   const location = useLocation();
+  const logoutHandler = () => {
+    Cookies.remove("id");
+    Cookies.remove("logged");
+  };
   return (
     <Breadcrumb className={styles.navigation}>
       <BreadcrumbItem isCurrentPage={location.pathname === "/locations"}>
@@ -22,16 +26,14 @@ function Navigation() {
           Животное
         </BreadcrumbLink>
       </BreadcrumbItem>
-      <BreadcrumbItem
-        isCurrentPage={location.pathname === "/visited-locations"}
-      >
-        <BreadcrumbLink as={Link} to="/visited-locations">
-          Точки локации, посещенные животным
-        </BreadcrumbLink>
-      </BreadcrumbItem>
       <BreadcrumbItem isCurrentPage={location.pathname === "/account"}>
         <BreadcrumbLink as={Link} to="/account">
           Аккаунт
+        </BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbItem>
+        <BreadcrumbLink as={Link} to="/" onClick={logoutHandler}>
+          Выход
         </BreadcrumbLink>
       </BreadcrumbItem>
     </Breadcrumb>

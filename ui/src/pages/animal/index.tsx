@@ -26,7 +26,7 @@ import locationsStore from "../../store/locationsStore";
 import auth from "../../store/authStore";
 import { getLocations } from "../../models/locationsRequest";
 import { getAnimalTypes } from "../../models/animalTypeRequest";
-import animalTypeStore from "../../store/animalTypes";
+import animalTypeStore from "../../store/animalTypesStore";
 import { Select as MultipleSelect } from "chakra-react-select";
 
 function Animal() {
@@ -88,7 +88,7 @@ function Animal() {
         ? setErrorMsg(val)
         : (animalStore.animal = [...animalStore.animal, val])
     );
-    setOpenModal(false);
+    closeModalHandler();
   };
 
   return (
